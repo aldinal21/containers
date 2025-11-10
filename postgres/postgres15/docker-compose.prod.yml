@@ -1,0 +1,35 @@
+services:
+  postgres15:
+    image: postgres:${POSTGRES_VERSION:-15-alpine}
+    container_name: ${PROJECT_NAME:-postgres15_prod}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      PGDATA: ${PGDATA:-/var/lib/postgresql/data/pgdata}
+    ports:
+      - "${PORT:-5433}:5432"
+    volumes:
+      - ${VOLUME_NAME:-postgres15_data_prod}:/var/lib/postgresql/data
+    networks:
+      - ${NETWORK_NAME:-postgres_network_prod}
+      - ${CORE_NETWORK:-core_network_prod}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres15_data_prod:
+    driver: local
+    name: ${VOLUME_NAME:-postgres15_data_prod}
+
+networks:
+  postgres_network_prod:
+    driver: bridge
+    name: ${NETWORK_NAME:-postgres_network_prod}
+  core_network_prod:
+    external: true
+    name: ${CORE_NETWORK:-core_network_prod}

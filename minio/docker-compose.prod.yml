@@ -1,0 +1,35 @@
+services:
+  minio:
+    image: minio/minio:${MINIO_VERSION:-latest}
+    container_name: ${CONTAINER_NAME:-minio_prod}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    ports:
+      - "${MINIO_API_PORT:-9200}:9000"
+      - "${MINIO_CONSOLE_PORT:-9201}:9001"
+    volumes:
+      - ${VOLUME_NAME:-minio_data_prod}:/data
+    networks:
+      - ${NETWORK_NAME:-minio_network_prod}
+      - ${CORE_NETWORK:-core_network_prod}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+volumes:
+  minio_data_prod:
+    driver: local
+    name: ${VOLUME_NAME:-minio_data_prod}
+
+networks:
+  minio_network_prod:
+    driver: bridge
+    name: ${NETWORK_NAME:-minio_network_prod}
+  core_network_prod:
+    external: true
+    name: ${CORE_NETWORK:-core_network_prod}

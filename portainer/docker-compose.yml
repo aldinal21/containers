@@ -1,0 +1,18 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:${PORTAINER_VERSION:-latest}
+    container_name: ${CONTAINER_NAME:-portainer}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "${PORTAINER_HTTP_PORT:-9000}:9000"
+      - "${PORTAINER_HTTPS_PORT:-9443}:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${VOLUME_NAME:-portainer_data}:/data
+
+volumes:
+  portainer_data:
+    driver: local
+    name: ${VOLUME_NAME:-portainer_data}
