@@ -1,6 +1,6 @@
 services:
   postgres15:
-    image: postgres:${POSTGRES_VERSION:-15-alpine}
+    image: ${POSTGRES_VERSION:-pgvector/pgvector:pg15}
     container_name: ${PROJECT_NAME:-postgres15_prod}
     restart: ${RESTART_POLICY:-unless-stopped}
     environment:
