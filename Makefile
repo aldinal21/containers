@@ -47,8 +47,16 @@ help: ## Show this help message
 
 # Network Management
 network-create: ## Create core network
+	# Core networks (external)
 	-docker network create core_network_dev
 	-docker network create core_network_prod
+
+	# PostgreSQL networks used by pgAdmin and postgres compose files
+	-docker network create postgres_network_dev
+	-docker network create postgres_network_prod
+
+	# NOTE: MinIO networks should be created by docker-compose (they are not marked external
+	# in the compose files). Do NOT pre-create them here to avoid compose label conflicts.
 
 network-list: ## List all networks
 	docker network ls
