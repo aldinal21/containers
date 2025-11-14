@@ -39,31 +39,55 @@ Setup Docker containers untuk development dan production environment menggunakan
 
 ### Prerequisites
 
-- Docker Desktop installed and running
-- Make installed (via Scoop: `scoop install make`)
+- Docker installed and running
+- Make installed (Linux: `sudo apt install make` or `sudo yum install make`)
 
-### Setup
+### Setup for Development
 
-1. **Clone atau navigate ke project directory**
+1. **Clone repository**
 
    ```bash
-   cd c:\Projects\containers
+   git clone https://github.com/ronal-aldinal/containers.git
+   cd containers
    ```
 
-2. **Copy environment files** (opsional - sudah ada default values)
+2. **Copy environment files**
 
    ```bash
    cp postgres/postgres15/.env.example postgres/postgres15/.env.dev
    cp minio/.env.example minio/.env.dev
+   cp postgres/pgadmin4/.env.example postgres/pgadmin4/.env
+   cp portainer/.env.example portainer/.env
    ```
 
-3. **Start all services (Development)**
+3. **Create networks and start all services**
 
    ```bash
    make all-up
    ```
 
-4. **Start all services (Production)**
+### Setup for Production
+
+1. **Clone repository on production machine**
+
+   ```bash
+   git clone https://github.com/ronal-aldinal/containers.git
+   cd containers
+   ```
+
+2. **Copy and configure production environment files**
+
+   ```bash
+   cp postgres/postgres15/.env.example postgres/postgres15/.env.prod
+   cp minio/.env.example minio/.env.prod
+   cp postgres/pgadmin4/.env.example postgres/pgadmin4/.env
+   cp portainer/.env.example portainer/.env
+   ```
+
+   Then edit `.env.prod` files to set production credentials.
+
+3. **Create networks and start production services**
+
    ```bash
    make all-prod-up
    ```
@@ -170,9 +194,8 @@ make all-prod-down         # Stop all services (prod mode)
 │   ├── postgres15/
 │   │   ├── docker-compose.dev.yml   # PostgreSQL dev config
 │   │   ├── docker-compose.prod.yml  # PostgreSQL prod config
-│   │   ├── .env.dev                 # Dev environment variables
-│   │   ├── .env.prod                # Prod environment variables
-│   │   └── .env.example             # Environment template
+│   │   ├── .env.dev                 # Dev environment (on dev machine)
+│   │   └── .env.example             # Template (copy to .env.prod on prod machine)
 │   │
 │   └── pgadmin4/
 │       ├── docker-compose.yml       # pgAdmin config
@@ -182,9 +205,8 @@ make all-prod-down         # Stop all services (prod mode)
 ├── minio/
 │   ├── docker-compose.dev.yml       # MinIO dev config
 │   ├── docker-compose.prod.yml      # MinIO prod config
-│   ├── .env.dev                     # Dev environment variables
-│   ├── .env.prod                    # Prod environment variables
-│   └── .env.example                 # Environment template
+│   ├── .env.dev                     # Dev environment (on dev machine)
+│   └── .env.example                 # Template (copy to .env.prod on prod machine)
 │
 └── portainer/
     ├── docker-compose.yml           # Portainer config
@@ -310,8 +332,11 @@ Secret Key: minioadmin
 
 If you get port conflict errors, check what's using the port:
 
-```powershell
-netstat -ano | findstr :5432
+```bash
+# Linux
+sudo netstat -tulpn | grep :5432
+# or
+sudo lsof -i :5432
 ```
 
 Change the port in the respective `.env` file.
