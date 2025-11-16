@@ -35,6 +35,13 @@ Setup Docker containers untuk development dan production environment menggunakan
 - **HTTPS**: Port 9443 (https://localhost:9443)
 - Docker management UI
 
+### n8n
+
+- **Dev**: Port 5678 (http://localhost:5678)
+- **Prod**: Port 5679 (http://localhost:5679)
+- Workflow automation tool
+- Uses PostgreSQL as database backend
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -56,6 +63,7 @@ Setup Docker containers untuk development dan production environment menggunakan
    ```bash
    cp postgres/postgres15/.env.example postgres/postgres15/.env.dev
    cp minio/.env.example minio/.env.dev
+   cp n8n/.env.example n8n/.env.dev
    cp postgres/pgadmin4/.env.example postgres/pgadmin4/.env
    cp portainer/.env.example portainer/.env
    ```
@@ -80,6 +88,7 @@ Setup Docker containers untuk development dan production environment menggunakan
    ```bash
    cp postgres/postgres15/.env.example postgres/postgres15/.env.prod
    cp minio/.env.example minio/.env.prod
+   cp n8n/.env.example n8n/.env.prod
    cp postgres/pgadmin4/.env.example postgres/pgadmin4/.env
    cp portainer/.env.example portainer/.env
    ```
@@ -170,6 +179,27 @@ make portainer-logs        # Show logs
 make portainer-clean       # Remove container & volume
 ```
 
+### n8n Commands
+
+```bash
+# Development
+make n8n-dev-up            # Start n8n dev
+make n8n-dev-down          # Stop n8n dev
+make n8n-dev-restart       # Restart n8n dev
+
+# Production
+make n8n-prod-up           # Start n8n prod
+make n8n-prod-down         # Stop n8n prod
+make n8n-prod-restart      # Restart n8n prod
+
+# Utilities
+make n8n-logs ENV=dev      # Show logs (ENV=dev or prod)
+make n8n-logs-tail ENV=dev # Show last 100 lines
+make n8n-status            # Show container status
+make n8n-clean ENV=dev     # Remove container & volume
+make n8n-clean-all         # Remove all n8n data
+```
+
 ### All Services
 
 ```bash
@@ -208,6 +238,12 @@ make all-prod-down         # Stop all services (prod mode)
 │   ├── .env.dev                     # Dev environment (on dev machine)
 │   └── .env.example                 # Template (copy to .env.prod on prod machine)
 │
+├── n8n/
+│   ├── docker-compose.dev.yml       # n8n dev config
+│   ├── docker-compose.prod.yml      # n8n prod config
+│   ├── .env.dev                     # Dev environment (on dev machine)
+│   └── .env.example                 # Template (copy to .env.prod on prod machine)
+│
 └── portainer/
     ├── docker-compose.yml           # Portainer config
     ├── .env                         # Environment variables
@@ -219,18 +255,24 @@ make all-prod-down         # Stop all services (prod mode)
 ### Development Networks
 
 - `core_network_dev` - Shared network for dev services
-- `postgres_network_dev` - PostgreSQL dev + pgAdmin
+- `postgres_network_dev` - PostgreSQL dev + pgAdmin + n8n dev
 - `minio_network_dev` - MinIO dev
+- `n8n_network_dev` - n8n dev
 
 ### Production Networks
 
 - `core_network_prod` - Shared network for prod services
-- `postgres_network_prod` - PostgreSQL prod + pgAdmin
+- `postgres_network_prod` - PostgreSQL prod + pgAdmin + n8n prod
 - `minio_network_prod` - MinIO prod
+- `n8n_network_prod` - n8n prod
 
 ### Portainer
 
 - Accesses Docker socket directly (no network needed)
+
+### n8n Database
+
+n8n uses PostgreSQL as its database backend, connecting to the same PostgreSQL instance (dev or prod) through the postgres_network.
 
 ### pgAdmin Connections
 

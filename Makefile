@@ -40,6 +40,17 @@ help: ## Show this help message
 	@echo   minio-clean                    Remove MinIO containers and volumes
 	@echo   minio-clean-all                Remove all MinIO containers, volumes, and networks
 	@echo   minio-status                   Show MinIO container status
+	@echo   n8n-dev-up                     Start n8n in development mode
+	@echo   n8n-dev-down                   Stop n8n in development mode
+	@echo   n8n-dev-restart                Restart n8n in development mode
+	@echo   n8n-prod-up                    Start n8n in production mode
+	@echo   n8n-prod-down                  Stop n8n in production mode
+	@echo   n8n-prod-restart               Restart n8n in production mode
+	@echo   n8n-logs                       Show n8n logs (use ENV=dev or ENV=prod)
+	@echo   n8n-logs-tail                  Show last 100 lines of n8n logs
+	@echo   n8n-clean                      Remove n8n containers and volumes
+	@echo   n8n-clean-all                  Remove all n8n containers, volumes, and networks
+	@echo   n8n-status                     Show n8n container status
 	@echo   all-up                         Start all services in development mode
 	@echo   all-down                       Stop all services in development mode
 	@echo   all-prod-up                    Start all services in production mode
@@ -177,11 +188,50 @@ minio-clean-all: ## Remove all MinIO containers, volumes, and networks
 minio-status: ## Show MinIO container status
 	docker ps -a | grep minio || echo "No MinIO containers found"
 
+# n8n - Development
+n8n-dev-up: network-create postgres-dev-up ## Start n8n in development mode
+	cd n8n && docker-compose -f docker-compose.dev.yml -p n8n_dev --env-file .env.dev up -d
+
+n8n-dev-down: ## Stop n8n in development mode
+	cd n8n && docker-compose -f docker-compose.dev.yml -p n8n_dev --env-file .env.dev down
+
+n8n-dev-restart: ## Restart n8n in development mode
+	cd n8n && docker-compose -f docker-compose.dev.yml -p n8n_dev --env-file .env.dev restart
+
+# n8n - Production
+n8n-prod-up: network-create postgres-prod-up ## Start n8n in production mode
+	cd n8n && docker-compose -f docker-compose.prod.yml -p n8n_prod --env-file .env.prod up -d
+
+n8n-prod-down: ## Stop n8n in production mode
+	cd n8n && docker-compose -f docker-compose.prod.yml -p n8n_prod --env-file .env.prod down
+
+n8n-prod-restart: ## Restart n8n in production mode
+	cd n8n && docker-compose -f docker-compose.prod.yml -p n8n_prod --env-file .env.prod restart
+
+# n8n Logs
+n8n-logs: ## Show n8n logs (use ENV=dev or ENV=prod)
+	cd n8n && docker-compose -f docker-compose.$(ENV).yml -p n8n_$(ENV) --env-file .env.$(ENV) logs -f
+
+n8n-logs-tail: ## Show last 100 lines of n8n logs
+	cd n8n && docker-compose -f docker-compose.$(ENV).yml -p n8n_$(ENV) --env-file .env.$(ENV) logs --tail=100
+
+# n8n Cleanup
+n8n-clean: ## Remove n8n containers and volumes (use ENV=dev or ENV=prod)
+	cd n8n && docker-compose -f docker-compose.$(ENV).yml -p n8n_$(ENV) --env-file .env.$(ENV) down -v
+
+n8n-clean-all: ## Remove all n8n containers, volumes, and networks
+	-cd n8n && docker-compose -f docker-compose.dev.yml -p n8n_dev --env-file .env.dev down -v
+	-cd n8n && docker-compose -f docker-compose.prod.yml -p n8n_prod --env-file .env.prod down -v
+
+# n8n Status
+n8n-status: ## Show n8n container status
+	docker ps -a | grep n8n || echo "No n8n containers found"
+
 # All Services
-all-up: network-create postgres-dev-up pgadmin-up portainer-up minio-dev-up ## Start all services in development mode
+all-up: network-create postgres-dev-up pgadmin-up portainer-up minio-dev-up n8n-dev-up ## Start all services in development mode
 
-all-down: postgres-dev-down pgadmin-down portainer-down minio-dev-down ## Stop all services in development mode
+all-down: n8n-dev-down postgres-dev-down pgadmin-down portainer-down minio-dev-down ## Stop all services in development mode
 
-all-prod-up: network-create postgres-prod-up pgadmin-up portainer-up minio-prod-up ## Start all services in production mode
+all-prod-up: network-create postgres-prod-up pgadmin-up portainer-up minio-prod-up n8n-prod-up ## Start all services in production mode
 
-all-prod-down: postgres-prod-down pgadmin-down portainer-down minio-prod-down ## Stop all services in production mode
+all-prod-down: n8n-prod-down postgres-prod-down pgadmin-down portainer-down minio-prod-down ## Stop all services in production mode
