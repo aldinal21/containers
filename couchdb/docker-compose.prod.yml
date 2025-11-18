@@ -1,0 +1,41 @@
+services:
+  couchdb:
+    image: couchdb:${COUCHDB_VERSION:-latest}
+    container_name: ${CONTAINER_NAME:-couchdb_prod}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    environment:
+      - COUCHDB_USER=${COUCHDB_USER:-admin}
+      - COUCHDB_PASSWORD=${COUCHDB_PASSWORD:-admin}
+      - COUCHDB_SECRET=${COUCHDB_SECRET:-}
+      - NODENAME=${NODENAME:-127.0.0.1}
+    ports:
+      - "${COUCHDB_PORT:-5985}:5984"
+      - "${COUCHDB_ADMIN_PORT:-5987}:5986"
+    volumes:
+      - ${VOLUME_NAME:-couchdb_data_prod}:/opt/couchdb/data
+      - ${VOLUME_CONFIG:-couchdb_config_prod}:/opt/couchdb/etc/local.d
+    networks:
+      - ${NETWORK_NAME:-couchdb_network_prod}
+      - ${CORE_NETWORK:-core_network_prod}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5984/_up"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  couchdb_data_prod:
+    driver: local
+    name: ${VOLUME_NAME:-couchdb_data_prod}
+  couchdb_config_prod:
+    driver: local
+    name: ${VOLUME_CONFIG:-couchdb_config_prod}
+
+networks:
+  couchdb_network_prod:
+    driver: bridge
+    name: ${NETWORK_NAME:-couchdb_network_prod}
+  core_network_prod:
+    external: true
+    name: ${CORE_NETWORK:-core_network_prod}

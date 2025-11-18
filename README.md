@@ -42,6 +42,18 @@ Setup Docker containers untuk development dan production environment menggunakan
 - Workflow automation tool
 - Uses PostgreSQL as database backend
 
+### CouchDB
+
+- **Dev**: 
+  - Port 5984 (http://localhost:5984)
+  - Admin Port 5986
+- **Prod**: 
+  - Port 5985 (http://localhost:5985)
+  - Admin Port 5987
+- Username: `admin`
+- Password: `admin`
+- Fauxton UI available at http://localhost:5984/_utils
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -64,6 +76,7 @@ Setup Docker containers untuk development dan production environment menggunakan
    cp postgres/postgres15/.env.example postgres/postgres15/.env.dev
    cp minio/.env.example minio/.env.dev
    cp n8n/.env.example n8n/.env.dev
+   cp couchdb/.env.example couchdb/.env.dev
    cp postgres/pgadmin4/.env.example postgres/pgadmin4/.env
    cp portainer/.env.example portainer/.env
    ```
@@ -89,6 +102,7 @@ Setup Docker containers untuk development dan production environment menggunakan
    cp postgres/postgres15/.env.example postgres/postgres15/.env.prod
    cp minio/.env.example minio/.env.prod
    cp n8n/.env.example n8n/.env.prod
+   cp couchdb/.env.example couchdb/.env.prod
    cp postgres/pgadmin4/.env.example postgres/pgadmin4/.env
    cp portainer/.env.example portainer/.env
    ```
@@ -200,6 +214,27 @@ make n8n-clean ENV=dev     # Remove container & volume
 make n8n-clean-all         # Remove all n8n data
 ```
 
+### CouchDB Commands
+
+```bash
+# Development
+make couchdb-dev-up        # Start CouchDB dev
+make couchdb-dev-down      # Stop CouchDB dev
+make couchdb-dev-restart   # Restart CouchDB dev
+
+# Production
+make couchdb-prod-up       # Start CouchDB prod
+make couchdb-prod-down     # Stop CouchDB prod
+make couchdb-prod-restart  # Restart CouchDB prod
+
+# Utilities
+make couchdb-logs ENV=dev      # Show logs (ENV=dev or prod)
+make couchdb-logs-tail ENV=dev # Show last 100 lines
+make couchdb-status            # Show container status
+make couchdb-clean ENV=dev     # Remove container & volume
+make couchdb-clean-all         # Remove all CouchDB data
+```
+
 ### All Services
 
 ```bash
@@ -244,6 +279,12 @@ make all-prod-down         # Stop all services (prod mode)
 │   ├── .env.dev                     # Dev environment (on dev machine)
 │   └── .env.example                 # Template (copy to .env.prod on prod machine)
 │
+├── couchdb/
+│   ├── docker-compose.dev.yml       # CouchDB dev config
+│   ├── docker-compose.prod.yml      # CouchDB prod config
+│   ├── .env.dev                     # Dev environment (on dev machine)
+│   └── .env.example                 # Template (copy to .env.prod on prod machine)
+│
 └── portainer/
     ├── docker-compose.yml           # Portainer config
     ├── .env                         # Environment variables
@@ -258,6 +299,7 @@ make all-prod-down         # Stop all services (prod mode)
 - `postgres_network_dev` - PostgreSQL dev + pgAdmin + n8n dev
 - `minio_network_dev` - MinIO dev
 - `n8n_network_dev` - n8n dev
+- `couchdb_network_dev` - CouchDB dev
 
 ### Production Networks
 
@@ -265,6 +307,7 @@ make all-prod-down         # Stop all services (prod mode)
 - `postgres_network_prod` - PostgreSQL prod + pgAdmin + n8n prod
 - `minio_network_prod` - MinIO prod
 - `n8n_network_prod` - n8n prod
+- `couchdb_network_prod` - CouchDB prod
 
 ### Portainer
 

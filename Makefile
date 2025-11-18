@@ -51,6 +51,17 @@ help: ## Show this help message
 	@echo   n8n-clean                      Remove n8n containers and volumes
 	@echo   n8n-clean-all                  Remove all n8n containers, volumes, and networks
 	@echo   n8n-status                     Show n8n container status
+	@echo   couchdb-dev-up                 Start CouchDB in development mode
+	@echo   couchdb-dev-down               Stop CouchDB in development mode
+	@echo   couchdb-dev-restart            Restart CouchDB in development mode
+	@echo   couchdb-prod-up                Start CouchDB in production mode
+	@echo   couchdb-prod-down              Stop CouchDB in production mode
+	@echo   couchdb-prod-restart           Restart CouchDB in production mode
+	@echo   couchdb-logs                   Show CouchDB logs (use ENV=dev or ENV=prod)
+	@echo   couchdb-logs-tail              Show last 100 lines of CouchDB logs
+	@echo   couchdb-clean                  Remove CouchDB containers and volumes
+	@echo   couchdb-clean-all              Remove all CouchDB containers, volumes, and networks
+	@echo   couchdb-status                 Show CouchDB container status
 	@echo   all-up                         Start all services in development mode
 	@echo   all-down                       Stop all services in development mode
 	@echo   all-prod-up                    Start all services in production mode
@@ -227,11 +238,50 @@ n8n-clean-all: ## Remove all n8n containers, volumes, and networks
 n8n-status: ## Show n8n container status
 	docker ps -a | grep n8n || echo "No n8n containers found"
 
+# CouchDB - Development
+couchdb-dev-up: network-create ## Start CouchDB in development mode
+	cd couchdb && docker-compose -f docker-compose.dev.yml -p couchdb_dev --env-file .env.dev up -d
+
+couchdb-dev-down: ## Stop CouchDB in development mode
+	cd couchdb && docker-compose -f docker-compose.dev.yml -p couchdb_dev --env-file .env.dev down
+
+couchdb-dev-restart: ## Restart CouchDB in development mode
+	cd couchdb && docker-compose -f docker-compose.dev.yml -p couchdb_dev --env-file .env.dev restart
+
+# CouchDB - Production
+couchdb-prod-up: network-create ## Start CouchDB in production mode
+	cd couchdb && docker-compose -f docker-compose.prod.yml -p couchdb_prod --env-file .env.prod up -d
+
+couchdb-prod-down: ## Stop CouchDB in production mode
+	cd couchdb && docker-compose -f docker-compose.prod.yml -p couchdb_prod --env-file .env.prod down
+
+couchdb-prod-restart: ## Restart CouchDB in production mode
+	cd couchdb && docker-compose -f docker-compose.prod.yml -p couchdb_prod --env-file .env.prod restart
+
+# CouchDB Logs
+couchdb-logs: ## Show CouchDB logs (use ENV=dev or ENV=prod)
+	cd couchdb && docker-compose -f docker-compose.$(ENV).yml -p couchdb_$(ENV) --env-file .env.$(ENV) logs -f
+
+couchdb-logs-tail: ## Show last 100 lines of CouchDB logs
+	cd couchdb && docker-compose -f docker-compose.$(ENV).yml -p couchdb_$(ENV) --env-file .env.$(ENV) logs --tail=100
+
+# CouchDB Cleanup
+couchdb-clean: ## Remove CouchDB containers and volumes (use ENV=dev or ENV=prod)
+	cd couchdb && docker-compose -f docker-compose.$(ENV).yml -p couchdb_$(ENV) --env-file .env.$(ENV) down -v
+
+couchdb-clean-all: ## Remove all CouchDB containers, volumes, and networks
+	-cd couchdb && docker-compose -f docker-compose.dev.yml -p couchdb_dev --env-file .env.dev down -v
+	-cd couchdb && docker-compose -f docker-compose.prod.yml -p couchdb_prod --env-file .env.prod down -v
+
+# CouchDB Status
+couchdb-status: ## Show CouchDB container status
+	docker ps -a | grep couchdb || echo "No CouchDB containers found"
+
 # All Services
-all-up: network-create postgres-dev-up pgadmin-up portainer-up minio-dev-up n8n-dev-up ## Start all services in development mode
+all-up: network-create postgres-dev-up pgadmin-up portainer-up minio-dev-up n8n-dev-up couchdb-dev-up ## Start all services in development mode
 
-all-down: n8n-dev-down postgres-dev-down pgadmin-down portainer-down minio-dev-down ## Stop all services in development mode
+all-down: couchdb-dev-down n8n-dev-down postgres-dev-down pgadmin-down portainer-down minio-dev-down ## Stop all services in development mode
 
-all-prod-up: network-create postgres-prod-up pgadmin-up portainer-up minio-prod-up n8n-prod-up ## Start all services in production mode
+all-prod-up: network-create postgres-prod-up pgadmin-up portainer-up minio-prod-up n8n-prod-up couchdb-prod-up ## Start all services in production mode
 
-all-prod-down: n8n-prod-down postgres-prod-down pgadmin-down portainer-down minio-prod-down ## Stop all services in production mode
+all-prod-down: couchdb-prod-down n8n-prod-down postgres-prod-down pgadmin-down portainer-down minio-prod-down ## Stop all services in production mode
