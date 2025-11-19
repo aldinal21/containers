@@ -11,12 +11,7 @@ Setup Docker containers untuk development dan production environment menggunakan
 - Username: `admin`
 - Password: `admin`
 - Database: `postgres`
-
-### pgAdmin 4
-
-- **Port**: 5050
-- URL: http://localhost:5050
-- Mode: Desktop (no login required)
+- **Note**: Gunakan DBeaver atau database client favorit Anda untuk manajemen database
 
 ### MinIO
 
@@ -77,7 +72,6 @@ Setup Docker containers untuk development dan production environment menggunakan
    cp minio/.env.example minio/.env.dev
    cp n8n/.env.example n8n/.env.dev
    cp couchdb/.env.example couchdb/.env.dev
-   cp postgres/pgadmin4/.env.example postgres/pgadmin4/.env
    cp portainer/.env.example portainer/.env
    ```
 
@@ -99,20 +93,41 @@ Setup Docker containers untuk development dan production environment menggunakan
 2. **Copy and configure production environment files**
 
    ```bash
+   # Copy environment files
    cp postgres/postgres15/.env.example postgres/postgres15/.env.prod
    cp minio/.env.example minio/.env.prod
    cp n8n/.env.example n8n/.env.prod
    cp couchdb/.env.example couchdb/.env.prod
-   cp postgres/pgadmin4/.env.example postgres/pgadmin4/.env
    cp portainer/.env.example portainer/.env
    ```
 
-   Then edit `.env.prod` files to set production credentials.
+3. **Edit production credentials** (PENTING!)
 
-3. **Create networks and start production services**
+   Edit file `.env.prod` di setiap folder service untuk mengatur kredensial production yang aman:
+   
+   ```bash
+   nano postgres/postgres15/.env.prod  # Ubah POSTGRES_PASSWORD
+   nano minio/.env.prod                # Ubah MINIO_ROOT_USER & MINIO_ROOT_PASSWORD
+   nano n8n/.env.prod                  # Ubah N8N credentials
+   nano couchdb/.env.prod              # Ubah COUCHDB_USER & COUCHDB_PASSWORD
+   nano portainer/.env                 # (Optional) Sesuaikan port jika perlu
+   ```
+
+4. **Start all production services**
 
    ```bash
    make all-prod-up
+   ```
+
+5. **Verify services are running**
+
+   ```bash
+   docker ps
+   # atau cek individual service:
+   make postgres-status
+   make minio-status
+   make n8n-status
+   make couchdb-status
    ```
 
 ## 📋 Available Commands
@@ -150,16 +165,6 @@ make postgres-shell ENV=dev          # Connect to PostgreSQL shell
 make postgres-status                 # Show container status
 make postgres-clean ENV=dev          # Remove container & volume
 make postgres-clean-all              # Remove all PostgreSQL data
-```
-
-### pgAdmin Commands
-
-```bash
-make pgadmin-up            # Start pgAdmin4
-make pgadmin-down          # Stop pgAdmin4
-make pgadmin-restart       # Restart pgAdmin4
-make pgadmin-logs          # Show logs
-make pgadmin-clean         # Remove container & volume
 ```
 
 ### MinIO Commands
@@ -256,16 +261,11 @@ make all-prod-down         # Stop all services (prod mode)
 ├── .gitignore                        # Git ignore rules
 │
 ├── postgres/
-│   ├── postgres15/
-│   │   ├── docker-compose.dev.yml   # PostgreSQL dev config
-│   │   ├── docker-compose.prod.yml  # PostgreSQL prod config
-│   │   ├── .env.dev                 # Dev environment (on dev machine)
-│   │   └── .env.example             # Template (copy to .env.prod on prod machine)
-│   │
-│   └── pgadmin4/
-│       ├── docker-compose.yml       # pgAdmin config
-│       ├── .env                     # Environment variables
-│       └── .env.example             # Environment template
+│   └── postgres15/
+│       ├── docker-compose.dev.yml   # PostgreSQL dev config
+│       ├── docker-compose.prod.yml  # PostgreSQL prod config
+│       ├── .env.dev                 # Dev environment (on dev machine)
+│       └── .env.example             # Template (copy to .env.prod on prod machine)
 │
 ├── minio/
 │   ├── docker-compose.dev.yml       # MinIO dev config
@@ -296,7 +296,7 @@ make all-prod-down         # Stop all services (prod mode)
 ### Development Networks
 
 - `core_network_dev` - Shared network for dev services
-- `postgres_network_dev` - PostgreSQL dev + pgAdmin + n8n dev
+- `postgres_network_dev` - PostgreSQL dev + n8n dev
 - `minio_network_dev` - MinIO dev
 - `n8n_network_dev` - n8n dev
 - `couchdb_network_dev` - CouchDB dev
@@ -304,7 +304,7 @@ make all-prod-down         # Stop all services (prod mode)
 ### Production Networks
 
 - `core_network_prod` - Shared network for prod services
-- `postgres_network_prod` - PostgreSQL prod + pgAdmin + n8n prod
+- `postgres_network_prod` - PostgreSQL prod + n8n prod
 - `minio_network_prod` - MinIO prod
 - `n8n_network_prod` - n8n prod
 - `couchdb_network_prod` - CouchDB prod
@@ -317,9 +317,9 @@ make all-prod-down         # Stop all services (prod mode)
 
 n8n uses PostgreSQL as its database backend, connecting to the same PostgreSQL instance (dev or prod) through the postgres_network.
 
-### pgAdmin Connections
+### Database Management
 
-pgAdmin connects to both dev and prod PostgreSQL networks, allowing management of both environments from single instance.
+Gunakan DBeaver atau database client favorit Anda untuk connect ke PostgreSQL. Tidak ada pgAdmin yang diinstall di setup ini.
 
 ## 🔧 Configuration
 
@@ -338,10 +338,6 @@ Edit the respective `.env.dev` or `.env.prod` files:
 - Dev Console: `MINIO_CONSOLE_PORT=9101` in `minio/.env.dev`
 - Prod API: `MINIO_API_PORT=9200` in `minio/.env.prod`
 - Prod Console: `MINIO_CONSOLE_PORT=9201` in `minio/.env.prod`
-
-**pgAdmin:**
-
-- `PGADMIN_PORT=5050` in `postgres/pgadmin4/.env`
 
 **Portainer:**
 
@@ -441,7 +437,8 @@ To completely reset all data:
 ```bash
 make postgres-clean-all
 make minio-clean-all
-make pgadmin-clean
+make n8n-clean-all
+make couchdb-clean-all
 make portainer-clean
 ```
 

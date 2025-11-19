@@ -4,14 +4,16 @@ services:
     container_name: ${CONTAINER_NAME:-n8n_prod}
     restart: ${RESTART_POLICY:-unless-stopped}
     environment:
-      - N8N_HOST=${N8N_HOST:-localhost}
-      - N8N_PORT=${N8N_PORT:-5679}
+      - N8N_HOST=${N8N_HOST:-0.0.0.0}
+      - N8N_PORT=${N8N_PORT:-5678}
       - N8N_PROTOCOL=${N8N_PROTOCOL:-http}
+      - N8N_EDITOR_BASE_URL=${N8N_EDITOR_BASE_URL}
+      - N8N_SECURE_COOKIE=${N8N_SECURE_COOKIE:-false}
       - WEBHOOK_URL=${WEBHOOK_URL:-http://localhost:5679/}
       - GENERIC_TIMEZONE=${GENERIC_TIMEZONE:-Asia/Jakarta}
       - TZ=${TZ:-Asia/Jakarta}
       # Database (using PostgreSQL)
-      - DB_TYPE=${DB_TYPE:-postgresdb}
+      - DB_TYPE=${DB_TYPE:-postgres}
       - DB_POSTGRESDB_HOST=${DB_POSTGRESDB_HOST:-postgres15_prod}
       - DB_POSTGRESDB_PORT=${DB_POSTGRESDB_PORT:-5432}
       - DB_POSTGRESDB_DATABASE=${DB_POSTGRESDB_DATABASE:-n8n}
@@ -21,7 +23,7 @@ services:
       - EXECUTIONS_MODE=${EXECUTIONS_MODE:-queue}
       - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY:-}
     ports:
-      - "${N8N_PORT:-5679}:5678"
+      - "${N8N_EXTERNAL_PORT:-5679}:5678"
     volumes:
       - ${VOLUME_NAME:-n8n_data_prod}:/home/node/.n8n
     networks:

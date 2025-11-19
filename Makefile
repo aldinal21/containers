@@ -73,54 +73,51 @@ network-create: ## Create core network
 	-docker network create core_network_dev
 	-docker network create core_network_prod
 
-	# PostgreSQL networks used by pgAdmin and postgres compose files
-	-docker network create postgres_network_dev
-	-docker network create postgres_network_prod
-
-	# NOTE: MinIO networks should be created by docker-compose (they are not marked external
-	# in the compose files). Do NOT pre-create them here to avoid compose label conflicts.
+	# NOTE: PostgreSQL, MinIO, n8n, and CouchDB networks should be created by docker compose
+	# (they are not marked external in the compose files).
+	# Do NOT pre-create them here to avoid compose label conflicts.
 
 network-list: ## List all networks
 	docker network ls
 
 # PostgreSQL 15 - Development
 postgres-dev-up: network-create ## Start PostgreSQL 15 in development mode
-	cd postgres/postgres15 && docker-compose -f docker-compose.dev.yml -p postgres15_dev --env-file .env.dev up -d
+	cd postgres/postgres15 && docker compose -f docker-compose.dev.yml -p postgres15_dev --env-file .env.dev up -d
 
 postgres-dev-down: ## Stop PostgreSQL 15 in development mode
-	cd postgres/postgres15 && docker-compose -f docker-compose.dev.yml -p postgres15_dev --env-file .env.dev down
+	cd postgres/postgres15 && docker compose -f docker-compose.dev.yml -p postgres15_dev --env-file .env.dev down
 
 postgres-dev-restart: ## Restart PostgreSQL 15 in development mode
-	cd postgres/postgres15 && docker-compose -f docker-compose.dev.yml -p postgres15_dev --env-file .env.dev restart
+	cd postgres/postgres15 && docker compose -f docker-compose.dev.yml -p postgres15_dev --env-file .env.dev restart
 
 # PostgreSQL 15 - Production
 postgres-prod-up: network-create ## Start PostgreSQL 15 in production mode
-	cd postgres/postgres15 && docker-compose -f docker-compose.prod.yml -p postgres15_prod --env-file .env.prod up -d
+	cd postgres/postgres15 && docker compose -f docker-compose.prod.yml -p postgres15_prod --env-file .env.prod up -d
 
 postgres-prod-down: ## Stop PostgreSQL 15 in production mode
-	cd postgres/postgres15 && docker-compose -f docker-compose.prod.yml -p postgres15_prod --env-file .env.prod down
+	cd postgres/postgres15 && docker compose -f docker-compose.prod.yml -p postgres15_prod --env-file .env.prod down
 
 postgres-prod-restart: ## Restart PostgreSQL 15 in production mode
-	cd postgres/postgres15 && docker-compose -f docker-compose.prod.yml -p postgres15_prod --env-file .env.prod restart
+	cd postgres/postgres15 && docker compose -f docker-compose.prod.yml -p postgres15_prod --env-file .env.prod restart
 
 # PostgreSQL Logs
 postgres-logs: ## Show PostgreSQL logs (use ENV=dev or ENV=prod)
-	cd postgres/postgres15 && docker-compose -f docker-compose.$(ENV).yml -p postgres15_$(ENV) --env-file .env.$(ENV) logs -f
+	cd postgres/postgres15 && docker compose -f docker-compose.$(ENV).yml -p postgres15_$(ENV) --env-file .env.$(ENV) logs -f
 
 postgres-logs-tail: ## Show last 100 lines of PostgreSQL logs
-	cd postgres/postgres15 && docker-compose -f docker-compose.$(ENV).yml -p postgres15_$(ENV) --env-file .env.$(ENV) logs --tail=100
+	cd postgres/postgres15 && docker compose -f docker-compose.$(ENV).yml -p postgres15_$(ENV) --env-file .env.$(ENV) logs --tail=100
 
 # PostgreSQL Shell
 postgres-shell: ## Connect to PostgreSQL shell (use ENV=dev or ENV=prod)
-	cd postgres/postgres15 && docker-compose -f docker-compose.$(ENV).yml -p postgres15_$(ENV) --env-file .env.$(ENV) exec postgres15 psql -U admin -d postgres
+	cd postgres/postgres15 && docker compose -f docker-compose.$(ENV).yml -p postgres15_$(ENV) --env-file .env.$(ENV) exec postgres15 psql -U admin -d postgres
 
 # Cleanup
 postgres-clean: ## Remove PostgreSQL containers and volumes
-	cd postgres/postgres15 && docker-compose -f docker-compose.$(ENV).yml -p postgres15_$(ENV) --env-file .env.$(ENV) down -v
+	cd postgres/postgres15 && docker compose -f docker-compose.$(ENV).yml -p postgres15_$(ENV) --env-file .env.$(ENV) down -v
 
 postgres-clean-all: ## Remove all PostgreSQL containers, volumes, and networks
-	-cd postgres/postgres15 && docker-compose -f docker-compose.dev.yml -p postgres15_dev --env-file .env.dev down -v
-	-cd postgres/postgres15 && docker-compose -f docker-compose.prod.yml -p postgres15_prod --env-file .env.prod down -v
+	-cd postgres/postgres15 && docker compose -f docker-compose.dev.yml -p postgres15_dev --env-file .env.dev down -v
+	-cd postgres/postgres15 && docker compose -f docker-compose.prod.yml -p postgres15_prod --env-file .env.prod down -v
 	-docker network rm core_network_dev
 	-docker network rm core_network_prod
 
@@ -130,70 +127,70 @@ postgres-status: ## Show PostgreSQL container status
 
 # pgAdmin4
 pgadmin-up: network-create ## Start pgAdmin4
-	cd postgres/pgadmin4 && docker-compose up -d
+	cd postgres/pgadmin4 && docker compose up -d
 
 pgadmin-down: ## Stop pgAdmin4
-	cd postgres/pgadmin4 && docker-compose down
+	cd postgres/pgadmin4 && docker compose down
 
 pgadmin-restart: ## Restart pgAdmin4
-	cd postgres/pgadmin4 && docker-compose restart
+	cd postgres/pgadmin4 && docker compose restart
 
 pgadmin-logs: ## Show pgAdmin4 logs
-	cd postgres/pgadmin4 && docker-compose logs -f
+	cd postgres/pgadmin4 && docker compose logs -f
 
 pgadmin-clean: ## Remove pgAdmin4 container and volume
-	cd postgres/pgadmin4 && docker-compose down -v
+	cd postgres/pgadmin4 && docker compose down -v
 
 # Portainer
 portainer-up: ## Start Portainer
-	cd portainer && docker-compose up -d
+	cd portainer && docker compose up -d
 
 portainer-down: ## Stop Portainer
-	cd portainer && docker-compose down
+	cd portainer && docker compose down
 
 portainer-restart: ## Restart Portainer
-	cd portainer && docker-compose restart
+	cd portainer && docker compose restart
 
 portainer-logs: ## Show Portainer logs
-	cd portainer && docker-compose logs -f
+	cd portainer && docker compose logs -f
 
 portainer-clean: ## Remove Portainer container and volume
-	cd portainer && docker-compose down -v
+	cd portainer && docker compose down -v
 
 # MinIO - Development
 minio-dev-up: network-create ## Start MinIO in development mode
-	cd minio && docker-compose -f docker-compose.dev.yml -p minio_dev --env-file .env.dev up -d
+	cd minio && docker compose -f docker-compose.dev.yml -p minio_dev --env-file .env.dev up -d
 
 minio-dev-down: ## Stop MinIO in development mode
-	cd minio && docker-compose -f docker-compose.dev.yml -p minio_dev --env-file .env.dev down
+	cd minio && docker compose -f docker-compose.dev.yml -p minio_dev --env-file .env.dev down
 
 minio-dev-restart: ## Restart MinIO in development mode
-	cd minio && docker-compose -f docker-compose.dev.yml -p minio_dev --env-file .env.dev restart
+	cd minio && docker compose -f docker-compose.dev.yml -p minio_dev --env-file .env.dev restart
 
 # MinIO - Production
 minio-prod-up: network-create ## Start MinIO in production mode
-	cd minio && docker-compose -f docker-compose.prod.yml -p minio_prod --env-file .env.prod up -d
+	cd minio && docker compose -f docker-compose.prod.yml -p minio_prod --env-file .env.prod up -d
 
 minio-prod-down: ## Stop MinIO in production mode
-	cd minio && docker-compose -f docker-compose.prod.yml -p minio_prod --env-file .env.prod down
+	cd minio && docker compose -f docker-compose.prod.yml -p minio_prod --env-file .env.prod down
 
 minio-prod-restart: ## Restart MinIO in production mode
-	cd minio && docker-compose -f docker-compose.prod.yml -p minio_prod --env-file .env.prod restart
+	cd minio && docker compose -f docker-compose.prod.yml -p minio_prod --env-file .env.prod restart
 
 # MinIO Logs
 minio-logs: ## Show MinIO logs (use ENV=dev or ENV=prod)
-	cd minio && docker-compose -f docker-compose.$(ENV).yml -p minio_$(ENV) --env-file .env.$(ENV) logs -f
+	cd minio && docker compose -f docker-compose.$(ENV).yml -p minio_$(ENV) --env-file .env.$(ENV) logs -f
 
 minio-logs-tail: ## Show last 100 lines of MinIO logs
-	cd minio && docker-compose -f docker-compose.$(ENV).yml -p minio_$(ENV) --env-file .env.$(ENV) logs --tail=100
+	cd minio && docker compose -f docker-compose.$(ENV).yml -p minio_$(ENV) --env-file .env.$(ENV) logs --tail=100
 
 # MinIO Cleanup
 minio-clean: ## Remove MinIO containers and volumes (use ENV=dev or ENV=prod)
-	cd minio && docker-compose -f docker-compose.$(ENV).yml -p minio_$(ENV) --env-file .env.$(ENV) down -v
+	cd minio && docker compose -f docker-compose.$(ENV).yml -p minio_$(ENV) --env-file .env.$(ENV) down -v
 
 minio-clean-all: ## Remove all MinIO containers, volumes, and networks
-	-cd minio && docker-compose -f docker-compose.dev.yml -p minio_dev --env-file .env.dev down -v
-	-cd minio && docker-compose -f docker-compose.prod.yml -p minio_prod --env-file .env.prod down -v
+	-cd minio && docker compose -f docker-compose.dev.yml -p minio_dev --env-file .env.dev down -v
+	-cd minio && docker compose -f docker-compose.prod.yml -p minio_prod --env-file .env.prod down -v
 
 # MinIO Status
 minio-status: ## Show MinIO container status
@@ -201,38 +198,38 @@ minio-status: ## Show MinIO container status
 
 # n8n - Development
 n8n-dev-up: network-create postgres-dev-up ## Start n8n in development mode
-	cd n8n && docker-compose -f docker-compose.dev.yml -p n8n_dev --env-file .env.dev up -d
+	cd n8n && docker compose -f docker-compose.dev.yml -p n8n_dev --env-file .env.dev up -d
 
 n8n-dev-down: ## Stop n8n in development mode
-	cd n8n && docker-compose -f docker-compose.dev.yml -p n8n_dev --env-file .env.dev down
+	cd n8n && docker compose -f docker-compose.dev.yml -p n8n_dev --env-file .env.dev down
 
 n8n-dev-restart: ## Restart n8n in development mode
-	cd n8n && docker-compose -f docker-compose.dev.yml -p n8n_dev --env-file .env.dev restart
+	cd n8n && docker compose -f docker-compose.dev.yml -p n8n_dev --env-file .env.dev restart
 
 # n8n - Production
 n8n-prod-up: network-create postgres-prod-up ## Start n8n in production mode
-	cd n8n && docker-compose -f docker-compose.prod.yml -p n8n_prod --env-file .env.prod up -d
+	cd n8n && docker compose -f docker-compose.prod.yml -p n8n_prod --env-file .env.prod up -d
 
 n8n-prod-down: ## Stop n8n in production mode
-	cd n8n && docker-compose -f docker-compose.prod.yml -p n8n_prod --env-file .env.prod down
+	cd n8n && docker compose -f docker-compose.prod.yml -p n8n_prod --env-file .env.prod down
 
 n8n-prod-restart: ## Restart n8n in production mode
-	cd n8n && docker-compose -f docker-compose.prod.yml -p n8n_prod --env-file .env.prod restart
+	cd n8n && docker compose -f docker-compose.prod.yml -p n8n_prod --env-file .env.prod restart
 
 # n8n Logs
 n8n-logs: ## Show n8n logs (use ENV=dev or ENV=prod)
-	cd n8n && docker-compose -f docker-compose.$(ENV).yml -p n8n_$(ENV) --env-file .env.$(ENV) logs -f
+	cd n8n && docker compose -f docker-compose.$(ENV).yml -p n8n_$(ENV) --env-file .env.$(ENV) logs -f
 
 n8n-logs-tail: ## Show last 100 lines of n8n logs
-	cd n8n && docker-compose -f docker-compose.$(ENV).yml -p n8n_$(ENV) --env-file .env.$(ENV) logs --tail=100
+	cd n8n && docker compose -f docker-compose.$(ENV).yml -p n8n_$(ENV) --env-file .env.$(ENV) logs --tail=100
 
 # n8n Cleanup
 n8n-clean: ## Remove n8n containers and volumes (use ENV=dev or ENV=prod)
-	cd n8n && docker-compose -f docker-compose.$(ENV).yml -p n8n_$(ENV) --env-file .env.$(ENV) down -v
+	cd n8n && docker compose -f docker-compose.$(ENV).yml -p n8n_$(ENV) --env-file .env.$(ENV) down -v
 
 n8n-clean-all: ## Remove all n8n containers, volumes, and networks
-	-cd n8n && docker-compose -f docker-compose.dev.yml -p n8n_dev --env-file .env.dev down -v
-	-cd n8n && docker-compose -f docker-compose.prod.yml -p n8n_prod --env-file .env.prod down -v
+	-cd n8n && docker compose -f docker-compose.dev.yml -p n8n_dev --env-file .env.dev down -v
+	-cd n8n && docker compose -f docker-compose.prod.yml -p n8n_prod --env-file .env.prod down -v
 
 # n8n Status
 n8n-status: ## Show n8n container status
@@ -240,48 +237,48 @@ n8n-status: ## Show n8n container status
 
 # CouchDB - Development
 couchdb-dev-up: network-create ## Start CouchDB in development mode
-	cd couchdb && docker-compose -f docker-compose.dev.yml -p couchdb_dev --env-file .env.dev up -d
+	cd couchdb && docker compose -f docker-compose.dev.yml -p couchdb_dev --env-file .env.dev up -d
 
 couchdb-dev-down: ## Stop CouchDB in development mode
-	cd couchdb && docker-compose -f docker-compose.dev.yml -p couchdb_dev --env-file .env.dev down
+	cd couchdb && docker compose -f docker-compose.dev.yml -p couchdb_dev --env-file .env.dev down
 
 couchdb-dev-restart: ## Restart CouchDB in development mode
-	cd couchdb && docker-compose -f docker-compose.dev.yml -p couchdb_dev --env-file .env.dev restart
+	cd couchdb && docker compose -f docker-compose.dev.yml -p couchdb_dev --env-file .env.dev restart
 
 # CouchDB - Production
 couchdb-prod-up: network-create ## Start CouchDB in production mode
-	cd couchdb && docker-compose -f docker-compose.prod.yml -p couchdb_prod --env-file .env.prod up -d
+	cd couchdb && docker compose -f docker-compose.prod.yml -p couchdb_prod --env-file .env.prod up -d
 
 couchdb-prod-down: ## Stop CouchDB in production mode
-	cd couchdb && docker-compose -f docker-compose.prod.yml -p couchdb_prod --env-file .env.prod down
+	cd couchdb && docker compose -f docker-compose.prod.yml -p couchdb_prod --env-file .env.prod down
 
 couchdb-prod-restart: ## Restart CouchDB in production mode
-	cd couchdb && docker-compose -f docker-compose.prod.yml -p couchdb_prod --env-file .env.prod restart
+	cd couchdb && docker compose -f docker-compose.prod.yml -p couchdb_prod --env-file .env.prod restart
 
 # CouchDB Logs
 couchdb-logs: ## Show CouchDB logs (use ENV=dev or ENV=prod)
-	cd couchdb && docker-compose -f docker-compose.$(ENV).yml -p couchdb_$(ENV) --env-file .env.$(ENV) logs -f
+	cd couchdb && docker compose -f docker-compose.$(ENV).yml -p couchdb_$(ENV) --env-file .env.$(ENV) logs -f
 
 couchdb-logs-tail: ## Show last 100 lines of CouchDB logs
-	cd couchdb && docker-compose -f docker-compose.$(ENV).yml -p couchdb_$(ENV) --env-file .env.$(ENV) logs --tail=100
+	cd couchdb && docker compose -f docker-compose.$(ENV).yml -p couchdb_$(ENV) --env-file .env.$(ENV) logs --tail=100
 
 # CouchDB Cleanup
 couchdb-clean: ## Remove CouchDB containers and volumes (use ENV=dev or ENV=prod)
-	cd couchdb && docker-compose -f docker-compose.$(ENV).yml -p couchdb_$(ENV) --env-file .env.$(ENV) down -v
+	cd couchdb && docker compose -f docker-compose.$(ENV).yml -p couchdb_$(ENV) --env-file .env.$(ENV) down -v
 
 couchdb-clean-all: ## Remove all CouchDB containers, volumes, and networks
-	-cd couchdb && docker-compose -f docker-compose.dev.yml -p couchdb_dev --env-file .env.dev down -v
-	-cd couchdb && docker-compose -f docker-compose.prod.yml -p couchdb_prod --env-file .env.prod down -v
+	-cd couchdb && docker compose -f docker-compose.dev.yml -p couchdb_dev --env-file .env.dev down -v
+	-cd couchdb && docker compose -f docker-compose.prod.yml -p couchdb_prod --env-file .env.prod down -v
 
 # CouchDB Status
 couchdb-status: ## Show CouchDB container status
 	docker ps -a | grep couchdb || echo "No CouchDB containers found"
 
 # All Services
-all-up: network-create postgres-dev-up pgadmin-up portainer-up minio-dev-up n8n-dev-up couchdb-dev-up ## Start all services in development mode
+all-up: network-create postgres-dev-up portainer-up minio-dev-up n8n-dev-up couchdb-dev-up ## Start all services in development mode
 
-all-down: couchdb-dev-down n8n-dev-down postgres-dev-down pgadmin-down portainer-down minio-dev-down ## Stop all services in development mode
+all-down: couchdb-dev-down n8n-dev-down postgres-dev-down portainer-down minio-dev-down ## Stop all services in development mode
 
-all-prod-up: network-create postgres-prod-up pgadmin-up portainer-up minio-prod-up n8n-prod-up couchdb-prod-up ## Start all services in production mode
+all-prod-up: network-create postgres-prod-up portainer-up minio-prod-up n8n-prod-up couchdb-prod-up ## Start all services in production mode
 
-all-prod-down: couchdb-prod-down n8n-prod-down postgres-prod-down pgadmin-down portainer-down minio-prod-down ## Stop all services in production mode
+all-prod-down: couchdb-prod-down n8n-prod-down postgres-prod-down portainer-down minio-prod-down ## Stop all services in production mode

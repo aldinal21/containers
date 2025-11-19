@@ -11,7 +11,7 @@ services:
       - GENERIC_TIMEZONE=${GENERIC_TIMEZONE:-Asia/Jakarta}
       - TZ=${TZ:-Asia/Jakarta}
       # Database (using PostgreSQL)
-      - DB_TYPE=${DB_TYPE:-postgresdb}
+      - DB_TYPE=${DB_TYPE:-postgres}
       - DB_POSTGRESDB_HOST=${DB_POSTGRESDB_HOST:-postgres15_dev}
       - DB_POSTGRESDB_PORT=${DB_POSTGRESDB_PORT:-5432}
       - DB_POSTGRESDB_DATABASE=${DB_POSTGRESDB_DATABASE:-n8n}
