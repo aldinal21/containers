@@ -7,7 +7,7 @@ services:
       - ${KUMA_VOLUME:-uptime_kuma_data}:/app/data
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - "127.0.0.1:${KUMA_PORT:-3001}:3001"
+      - "${KUMA_PORT:-3001}:3001"
     deploy:
       resources:
         limits:

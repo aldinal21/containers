@@ -40,7 +40,7 @@ Setup Docker containers untuk development dan production environment menggunakan
 
 ### Monitoring Tools
 
-- **Uptime Kuma** (Status): http://localhost:3001
+- **Uptime Kuma** (Status): Port 3001 (Bound to 0.0.0.0)
 
 ## 🚀 Quick Start
 
