@@ -1,7 +1,7 @@
 services:
-  postgres15:
-    image: ${POSTGRES_VERSION:-pgvector/pgvector:pg15}
-    container_name: ${PROJECT_NAME:-postgres15_prod}
+  postgres16:
+    image: ${POSTGRES_VERSION:-pgvector/pgvector:pg16}
+    container_name: ${PROJECT_NAME:-postgres16_prod}
     restart: ${RESTART_POLICY:-unless-stopped}
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
@@ -9,9 +9,14 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
       PGDATA: ${PGDATA:-/var/lib/postgresql/data/pgdata}
     ports:
+      # Bind to 0.0.0.0
       - "${PORT:-5433}:5432"
     volumes:
-      - ${VOLUME_NAME:-postgres15_data_prod}:/var/lib/postgresql/data
+      - ${VOLUME_NAME:-postgres16_data_prod}:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G  # Limit RAM
     networks:
       - ${NETWORK_NAME:-postgres_network_prod}
       - ${CORE_NETWORK:-core_network_prod}
@@ -22,9 +27,9 @@ services:
       retries: 5
 
 volumes:
-  postgres15_data_prod:
+  postgres16_data_prod:
     driver: local
-    name: ${VOLUME_NAME:-postgres15_data_prod}
+    name: ${VOLUME_NAME:-postgres16_data_prod}
 
 networks:
   postgres_network_prod:

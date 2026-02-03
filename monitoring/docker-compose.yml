@@ -1,0 +1,25 @@
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: ${KUMA_CONTAINER_NAME:-uptime_kuma}
+    restart: unless-stopped
+    volumes:
+      - ${KUMA_VOLUME:-uptime_kuma_data}:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "${KUMA_PORT:-3001}:3001"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    networks:
+      - monitor_net
+
+volumes:
+  uptime_kuma_data:
+    driver: local
+    name: ${KUMA_VOLUME:-uptime_kuma_data}
+
+networks:
+  monitor_net:
+    driver: bridge

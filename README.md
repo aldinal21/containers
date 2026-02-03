@@ -4,14 +4,14 @@ Setup Docker containers untuk development dan production environment menggunakan
 
 ## 📦 Services
 
-### PostgreSQL 15
+### PostgreSQL 16 (with pgvector)
 
 - **Dev**: Port 5432
 - **Prod**: Port 5433
 - Username: `admin`
 - Password: `admin`
 - Database: `postgres`
-- **Note**: Gunakan DBeaver atau database client favorit Anda untuk manajemen database
+- **Note**: Gunakan DBeaver atau database client favorit Anda untuk manajemen database. Includes `pgvector` extension for AI embeddings.
 
 ### MinIO
 
@@ -30,24 +30,17 @@ Setup Docker containers untuk development dan production environment menggunakan
 - **HTTPS**: Port 9443 (https://localhost:9443)
 - Docker management UI
 
-### n8n
+### Redis (Shared)
 
-- **Dev**: Port 5678 (http://localhost:5678)
-- **Prod**: Port 5679 (http://localhost:5679)
-- Workflow automation tool
-- Uses PostgreSQL as database backend
+- **Port**: 6379 (Bound to 0.0.0.0 - Access controlled by UFW/Tailscale)
+- **Password**: None (Disabled for local dev convenience)
+- **Databases**:
+  - DB 0: Development
+  - DB 1: Production
 
-### CouchDB
+### Monitoring Tools
 
-- **Dev**: 
-  - Port 5984 (http://localhost:5984)
-  - Admin Port 5986
-- **Prod**: 
-  - Port 5985 (http://localhost:5985)
-  - Admin Port 5987
-- Username: `admin`
-- Password: `admin`
-- Fauxton UI available at http://localhost:5984/_utils
+- **Uptime Kuma** (Status): http://localhost:3001
 
 ## 🚀 Quick Start
 
@@ -68,11 +61,11 @@ Setup Docker containers untuk development dan production environment menggunakan
 2. **Copy environment files**
 
    ```bash
-   cp postgres/postgres15/.env.example postgres/postgres15/.env.dev
+   cp postgres/postgres16/.env.example postgres/postgres16/.env.dev
    cp minio/.env.example minio/.env.dev
-   cp n8n/.env.example n8n/.env.dev
-   cp couchdb/.env.example couchdb/.env.dev
    cp portainer/.env.example portainer/.env
+   cp redis/.env.example redis/.env
+   cp monitoring/.env.example monitoring/.env
    ```
 
 3. **Create networks and start all services**
@@ -94,10 +87,8 @@ Setup Docker containers untuk development dan production environment menggunakan
 
    ```bash
    # Copy environment files
-   cp postgres/postgres15/.env.example postgres/postgres15/.env.prod
+   cp postgres/postgres16/.env.example postgres/postgres16/.env.prod
    cp minio/.env.example minio/.env.prod
-   cp n8n/.env.example n8n/.env.prod
-   cp couchdb/.env.example couchdb/.env.prod
    cp portainer/.env.example portainer/.env
    ```
 
@@ -106,10 +97,8 @@ Setup Docker containers untuk development dan production environment menggunakan
    Edit file `.env.prod` di setiap folder service untuk mengatur kredensial production yang aman:
    
    ```bash
-   nano postgres/postgres15/.env.prod  # Ubah POSTGRES_PASSWORD
+   nano postgres/postgres16/.env.prod  # Ubah POSTGRES_PASSWORD
    nano minio/.env.prod                # Ubah MINIO_ROOT_USER & MINIO_ROOT_PASSWORD
-   nano n8n/.env.prod                  # Ubah N8N credentials
-   nano couchdb/.env.prod              # Ubah COUCHDB_USER & COUCHDB_PASSWORD
    nano portainer/.env                 # (Optional) Sesuaikan port jika perlu
    ```
 
@@ -126,8 +115,6 @@ Setup Docker containers untuk development dan production environment menggunakan
    # atau cek individual service:
    make postgres-status
    make minio-status
-   make n8n-status
-   make couchdb-status
    ```
 
 ## 📋 Available Commands
@@ -190,54 +177,23 @@ make minio-clean-all       # Remove all MinIO data
 
 ### Portainer Commands
 
-```bash
-make portainer-up          # Start Portainer
-make portainer-down        # Stop Portainer
-make portainer-restart     # Restart Portainer
-make portainer-logs        # Show logs
+
 make portainer-clean       # Remove container & volume
 ```
 
-### n8n Commands
+### Redis Commands
 
 ```bash
-# Development
-make n8n-dev-up            # Start n8n dev
-make n8n-dev-down          # Stop n8n dev
-make n8n-dev-restart       # Restart n8n dev
-
-# Production
-make n8n-prod-up           # Start n8n prod
-make n8n-prod-down         # Stop n8n prod
-make n8n-prod-restart      # Restart n8n prod
-
-# Utilities
-make n8n-logs ENV=dev      # Show logs (ENV=dev or prod)
-make n8n-logs-tail ENV=dev # Show last 100 lines
-make n8n-status            # Show container status
-make n8n-clean ENV=dev     # Remove container & volume
-make n8n-clean-all         # Remove all n8n data
+make redis-up              # Start Redis
+make redis-down            # Stop Redis
+make redis-logs            # Show logs
 ```
 
-### CouchDB Commands
+### Monitoring Commands
 
 ```bash
-# Development
-make couchdb-dev-up        # Start CouchDB dev
-make couchdb-dev-down      # Stop CouchDB dev
-make couchdb-dev-restart   # Restart CouchDB dev
-
-# Production
-make couchdb-prod-up       # Start CouchDB prod
-make couchdb-prod-down     # Stop CouchDB prod
-make couchdb-prod-restart  # Restart CouchDB prod
-
-# Utilities
-make couchdb-logs ENV=dev      # Show logs (ENV=dev or prod)
-make couchdb-logs-tail ENV=dev # Show last 100 lines
-make couchdb-status            # Show container status
-make couchdb-clean ENV=dev     # Remove container & volume
-make couchdb-clean-all         # Remove all CouchDB data
+make monitoring-up         # Start Uptime Kuma
+make monitoring-down       # Stop Monitoring tools
 ```
 
 ### All Services
@@ -261,7 +217,7 @@ make all-prod-down         # Stop all services (prod mode)
 ├── .gitignore                        # Git ignore rules
 │
 ├── postgres/
-│   └── postgres15/
+│   └── postgres16/
 │       ├── docker-compose.dev.yml   # PostgreSQL dev config
 │       ├── docker-compose.prod.yml  # PostgreSQL prod config
 │       ├── .env.dev                 # Dev environment (on dev machine)
@@ -273,22 +229,20 @@ make all-prod-down         # Stop all services (prod mode)
 │   ├── .env.dev                     # Dev environment (on dev machine)
 │   └── .env.example                 # Template (copy to .env.prod on prod machine)
 │
-├── n8n/
-│   ├── docker-compose.dev.yml       # n8n dev config
-│   ├── docker-compose.prod.yml      # n8n prod config
-│   ├── .env.dev                     # Dev environment (on dev machine)
-│   └── .env.example                 # Template (copy to .env.prod on prod machine)
-│
-├── couchdb/
-│   ├── docker-compose.dev.yml       # CouchDB dev config
-│   ├── docker-compose.prod.yml      # CouchDB prod config
-│   ├── .env.dev                     # Dev environment (on dev machine)
-│   └── .env.example                 # Template (copy to .env.prod on prod machine)
-│
 └── portainer/
     ├── docker-compose.yml           # Portainer config
     ├── .env                         # Environment variables
     └── .env.example                 # Environment template
+
+├── redis/
+│   ├── docker-compose.yml           # Redis shared config
+│   ├── .env                         # Env variables
+│   └── .env.example                 # Template
+│
+└── monitoring/
+    ├── docker-compose.yml           # Uptime Kuma
+    ├── .env                         # Env variables
+    └── .env.example                 # Template
 ```
 
 ## 🌐 Network Architecture
@@ -296,26 +250,18 @@ make all-prod-down         # Stop all services (prod mode)
 ### Development Networks
 
 - `core_network_dev` - Shared network for dev services
-- `postgres_network_dev` - PostgreSQL dev + n8n dev
+- `postgres_network_dev` - PostgreSQL dev
 - `minio_network_dev` - MinIO dev
-- `n8n_network_dev` - n8n dev
-- `couchdb_network_dev` - CouchDB dev
 
 ### Production Networks
 
 - `core_network_prod` - Shared network for prod services
-- `postgres_network_prod` - PostgreSQL prod + n8n prod
+- `postgres_network_prod` - PostgreSQL prod
 - `minio_network_prod` - MinIO prod
-- `n8n_network_prod` - n8n prod
-- `couchdb_network_prod` - CouchDB prod
 
 ### Portainer
 
 - Accesses Docker socket directly (no network needed)
-
-### n8n Database
-
-n8n uses PostgreSQL as its database backend, connecting to the same PostgreSQL instance (dev or prod) through the postgres_network.
 
 ### Database Management
 
@@ -329,8 +275,8 @@ Edit the respective `.env.dev` or `.env.prod` files:
 
 **PostgreSQL:**
 
-- Dev: `PORT=5432` in `postgres/postgres15/.env.dev`
-- Prod: `PORT=5433` in `postgres/postgres15/.env.prod`
+- Dev: `PORT=5432` in `postgres/postgres16/.env.dev`
+- Prod: `PORT=5433` in `postgres/postgres16/.env.prod`
 
 **MinIO:**
 
@@ -382,7 +328,7 @@ Database: postgres
 **From Docker Container (same network):**
 
 ```
-Host: postgres15_dev (or postgres15_prod)
+Host: postgres16_dev (or postgres16_prod)
 Port: 5432
 User: admin
 Password: admin
@@ -437,8 +383,6 @@ To completely reset all data:
 ```bash
 make postgres-clean-all
 make minio-clean-all
-make n8n-clean-all
-make couchdb-clean-all
 make portainer-clean
 ```
 

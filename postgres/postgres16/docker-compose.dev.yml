@@ -1,7 +1,7 @@
 services:
-  postgres15:
-    image: ${POSTGRES_VERSION:-pgvector/pgvector:pg15}
-    container_name: ${PROJECT_NAME:-postgres15_dev}
+  postgres16:
+    image: ${POSTGRES_VERSION:-pgvector/pgvector:pg16}
+    container_name: ${PROJECT_NAME:-postgres16_dev}
     restart: ${RESTART_POLICY:-unless-stopped}
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
@@ -9,9 +9,14 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
       PGDATA: ${PGDATA:-/var/lib/postgresql/data/pgdata}
     ports:
+      # Bind to 0.0.0.0 (Protected by UFW/Tailscale)
       - "${PORT:-5432}:5432"
     volumes:
-      - ${VOLUME_NAME:-postgres15_data_dev}:/var/lib/postgresql/data
+      - ${VOLUME_NAME:-postgres16_data_dev}:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G  # Limit RAM to avoid freezing 8GB laptop
     networks:
       - ${NETWORK_NAME:-postgres_network_dev}
       - ${CORE_NETWORK:-core_network_dev}
@@ -22,9 +27,9 @@ services:
       retries: 5
 
 volumes:
-  postgres15_data_dev:
+  postgres16_data_dev:
     driver: local
-    name: ${VOLUME_NAME:-postgres15_data_dev}
+    name: ${VOLUME_NAME:-postgres16_data_dev}
 
 networks:
   postgres_network_dev:

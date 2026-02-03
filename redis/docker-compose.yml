@@ -1,0 +1,30 @@
+services:
+  redis:
+    image: redis:alpine
+    container_name: ${CONTAINER_NAME:-redis_shared}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    command: redis-server --appendonly yes
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - ${VOLUME_NAME:-redis_data}:/data
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    networks:
+      - ${CORE_NETWORK:-core_network_dev}
+      - ${CORE_NETWORK_PROD:-core_network_prod}
+
+volumes:
+  redis_data:
+    driver: local
+    name: ${VOLUME_NAME:-redis_data}
+
+networks:
+  core_network_dev:
+    external: true
+    name: ${CORE_NETWORK:-core_network_dev}
+  core_network_prod:
+    external: true
+    name: ${CORE_NETWORK_PROD:-core_network_prod}
