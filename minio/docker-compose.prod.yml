@@ -16,6 +16,11 @@ services:
       resources:
         limits:
           memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - ${NETWORK_NAME:-minio_network_prod}
       - ${CORE_NETWORK:-core_network_prod}

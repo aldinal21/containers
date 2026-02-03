@@ -7,11 +7,16 @@ services:
       - ${KUMA_VOLUME:-uptime_kuma_data}:/app/data
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - "${KUMA_PORT:-3001}:3001"
+      - "127.0.0.1:${KUMA_PORT:-3001}:3001"
     deploy:
       resources:
         limits:
           memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - monitor_net
 

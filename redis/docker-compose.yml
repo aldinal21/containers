@@ -12,6 +12,11 @@ services:
       resources:
         limits:
           memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - ${CORE_NETWORK:-core_network_dev}
       - ${CORE_NETWORK_PROD:-core_network_prod}

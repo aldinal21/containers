@@ -17,6 +17,11 @@ services:
       resources:
         limits:
           memory: 1.5G  # Limit RAM to avoid freezing 8GB laptop
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - ${NETWORK_NAME:-postgres_network_dev}
       - ${CORE_NETWORK:-core_network_dev}
