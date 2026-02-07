@@ -42,12 +42,6 @@ Setup Docker containers untuk development dan production environment menggunakan
 
 - **Uptime Kuma** (Status): Port 3001 (Bound to 0.0.0.0)
 
-### Tools
-
-- **Syncthing** (File Sync):
-  - **Web UI**: http://localhost:8384
-  - **Sync Port**: 22000 (TCP/UDP) - Open this in UFW/Firewall!
-
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -72,7 +66,6 @@ Setup Docker containers untuk development dan production environment menggunakan
    cp portainer/.env.example portainer/.env
    cp redis/.env.example redis/.env
    cp monitoring/.env.example monitoring/.env
-   cp tools/.env.example tools/.env
    ```
 
 3. **Create networks and start all services**
@@ -203,13 +196,6 @@ make monitoring-up         # Start Uptime Kuma
 make monitoring-down       # Stop Monitoring tools
 ```
 
-### Tools Commands
-
-```bash
-make tools-up              # Start Syncthing
-make tools-down            # Stop Syncthing
-```
-
 ### All Services
 
 ```bash
@@ -257,11 +243,6 @@ make all-prod-down         # Stop all services (prod mode)
     ├── docker-compose.yml           # Uptime Kuma
     ├── .env                         # Env variables
     └── .env.example                 # Template
-
-├── tools/
-│   ├── docker-compose.yml           # Syncthing
-│   ├── .env                         # Env variables
-│   └── .env.example                 # Template
 ```
 
 ## 🌐 Network Architecture

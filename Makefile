@@ -34,8 +34,6 @@ help: ## Show this help message
 	@echo   redis-down                     Stop Redis
 	@echo   monitoring-up                  Start Monitoring tools (Uptime Kuma)
 	@echo   monitoring-down                Stop Monitoring tools
-	@echo   tools-up                       Start Tools (Syncthing)
-	@echo   tools-down                     Stop Tools
 	@echo   minio-dev-up                   Start MinIO in development mode
 	@echo   minio-dev-down                 Stop MinIO in development mode
 	@echo   minio-dev-restart              Restart MinIO in development mode
@@ -165,16 +163,6 @@ monitoring-up: ## Start Monitoring tools (Uptime Kuma)
 
 monitoring-down: ## Stop Monitoring tools
 	cd monitoring && docker compose down
-
-# Tools (Syncthing)
-tools-up: ## Start Tools (Syncthing)
-	cd tools && docker compose up -d
-
-tools-down: ## Stop Tools
-	cd tools && docker compose down
-
-tools-logs: ## Show Tools logs
-	cd tools && docker compose logs -f
 
 # MinIO - Development
 minio-dev-up: network-create ## Start MinIO in development mode
