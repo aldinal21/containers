@@ -36,6 +36,10 @@ help: ## Show this help message
 	@echo   monitoring-down                Stop Monitoring tools
 	@echo   tools-up                       Start Tools (Syncthing)
 	@echo   tools-down                     Stop Tools
+	@echo   media-up                       Start Media Server (Jellyfin + FileBrowser)
+	@echo   media-down                     Stop Media Server
+	@echo   omnimind-up                    Start Omnimind (AI Service)
+	@echo   omnimind-down                  Stop Omnimind
 	@echo   minio-dev-up                   Start MinIO in development mode
 	@echo   minio-dev-down                 Stop MinIO in development mode
 	@echo   minio-dev-restart              Restart MinIO in development mode
@@ -165,6 +169,26 @@ monitoring-up: ## Start Monitoring tools (Uptime Kuma)
 
 monitoring-down: ## Stop Monitoring tools
 	cd monitoring && docker compose down
+
+# Omnimind
+omnimind-up: ## Start Omnimind
+	cd omnimind && docker compose up -d
+
+omnimind-down: ## Stop Omnimind
+	cd omnimind && docker compose down
+
+omnimind-logs: ## Show Omnimind logs
+	cd omnimind && docker compose logs -f
+
+# Media (Jellyfin + FileBrowser)
+media-up: ## Start Media Server
+	cd media && docker compose up -d
+
+media-down: ## Stop Media Server
+	cd media && docker compose down
+
+media-logs: ## Show Media logs
+	cd media && docker compose logs -f
 
 # Tools (Syncthing)
 tools-up: ## Start Tools (Syncthing)

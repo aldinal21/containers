@@ -1,0 +1,18 @@
+services:
+  omnimind:
+    image: ronalll/omnimind:latest
+    container_name: ${CONTAINER_NAME:-omnimind-prod}
+    pull_policy: always
+    ports:
+      - "${APP_PORT:-6789}:6789"
+    restart: always
+    env_file:
+      - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - omnimind_net
+
+networks:
+  omnimind_net:
+    driver: bridge
