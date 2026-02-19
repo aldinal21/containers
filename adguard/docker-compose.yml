@@ -1,0 +1,30 @@
+services:
+  adguardhome:
+    image: adguard/adguardhome:latest
+    container_name: ${CONTAINER_NAME:-adguardhome}
+    restart: unless-stopped
+    # DNS ports (53) and UI ports
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "${ADGUARD_UI_PORT:-8085}:80/tcp"
+      - "${ADGUARD_SETUP_PORT:-3000}:3000/tcp"
+      - "853:853/tcp" # DNS-over-TLS
+    volumes:
+      - ./work:/opt/adguardhome/work
+      - ./conf:/opt/adguardhome/conf
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - adguard_net
+
+networks:
+  adguard_net:
+    driver: bridge

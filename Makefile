@@ -40,6 +40,9 @@ help: ## Show this help message
 	@echo   media-down                     Stop Media Server
 	@echo   omnimind-up                    Start Omnimind (AI Service)
 	@echo   omnimind-down                  Stop Omnimind
+	@echo   adguard-up                     Start AdGuard Home (DNS Blocker)
+	@echo   adguard-down                   Stop AdGuard Home
+	@echo   adguard-logs                   Show AdGuard logs
 	@echo   minio-dev-up                   Start MinIO in development mode
 	@echo   minio-dev-down                 Stop MinIO in development mode
 	@echo   minio-dev-restart              Restart MinIO in development mode
@@ -169,6 +172,16 @@ monitoring-up: ## Start Monitoring tools (Uptime Kuma)
 
 monitoring-down: ## Stop Monitoring tools
 	cd monitoring && docker compose down
+
+# AdGuard Home
+adguard-up: ## Start AdGuard Home
+	cd adguard && docker compose up -d
+
+adguard-down: ## Stop AdGuard Home
+	cd adguard && docker compose down
+
+adguard-logs: ## Show AdGuard logs
+	cd adguard && docker compose logs -f
 
 # Omnimind
 omnimind-up: ## Start Omnimind

@@ -43,6 +43,7 @@ A production-ready Docker infrastructure for personal development, AI services, 
 ### 📊 Monitoring & Management
 - **Portainer**: `:9000` / `:9443` (Docker UI)
 - **Uptime Kuma**: `:3001` (Service Monitoring)
+- **AdGuard Home**: `:8085` (DNS Ad-blocker)
 
 ## 🚀 Quick Start
 
@@ -60,6 +61,7 @@ A production-ready Docker infrastructure for personal development, AI services, 
    cp monitoring/.env.example monitoring/.env
    cp media/.env.example media/.env
    cp omnimind/.env.example omnimind/.env
+   cp adguard/.env.example adguard/.env
    ```
 
 3. **Start Core Services**:
@@ -73,6 +75,24 @@ A production-ready Docker infrastructure for personal development, AI services, 
 - `make postgres-backup ENV=dev`: Manual DB backup.
 - `make <service>-logs`: Tail logs for any service.
 - `make <service>-down`: Stop specific service.
+
+## 🏗️ Project Structure
+
+```
+.
+├── Makefile
+├── README.md
+├── .gemini.md
+│
+├── adguard/
+├── media/
+├── monitoring/
+├── omnimind/
+├── portainer/
+├── postgres/
+├── redis/
+└── tools/
+```
 
 ---
 *Maintained by @aldinal21*
