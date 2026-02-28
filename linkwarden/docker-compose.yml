@@ -1,0 +1,27 @@
+services:
+  linkwarden:
+    image: ghcr.io/linkwarden/linkwarden:latest
+    container_name: ${CONTAINER_NAME:-linkwarden}
+    restart: unless-stopped
+    ports:
+      - "${LINKWARDEN_PORT:-3002}:3000"
+    env_file:
+      - .env
+    # We use your existing MinIO and Postgres via host.docker.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - linkwarden_net
+
+networks:
+  linkwarden_net:
+    driver: bridge

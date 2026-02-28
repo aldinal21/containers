@@ -40,10 +40,16 @@ A production-ready Docker infrastructure for personal development, AI services, 
 - **FileBrowser**: `:8081` (File Management & Upload)
 - **Path**: `/home/aldinal21/Movies`
 
+### 📑 Bookmark Manager (Linkwarden)
+- **Port**: `:3002`
+- **Storage**: Linked to MinIO.
+
 ### 📊 Monitoring & Management
 - **Portainer**: `:9000` / `:9443` (Docker UI)
 - **Uptime Kuma**: `:3001` (Service Monitoring)
-- **AdGuard Home**: `:8085` (DNS Ad-blocker)
+
+### 🖥️ Remote Desktop (RustDesk)
+- **Port**: `:21116` (ID/Relay Server)
 
 ## 🚀 Quick Start
 
@@ -61,12 +67,13 @@ A production-ready Docker infrastructure for personal development, AI services, 
    cp monitoring/.env.example monitoring/.env
    cp media/.env.example media/.env
    cp omnimind/.env.example omnimind/.env
-   cp adguard/.env.example adguard/.env
+   cp linkwarden/.env.example linkwarden/.env
+   cp rustdesk/.env.example rustdesk/.env
    ```
 
 3. **Start Core Services**:
    ```bash
-   make all-up monitoring-up media-up omnimind-up
+   make all-up monitoring-up media-up omnimind-up linkwarden-up rustdesk-up
    ```
 
 ## 🛠️ Management Commands (Makefile)
@@ -84,13 +91,14 @@ A production-ready Docker infrastructure for personal development, AI services, 
 ├── README.md
 ├── .gemini.md
 │
-├── adguard/
+├── linkwarden/
 ├── media/
 ├── monitoring/
 ├── omnimind/
 ├── portainer/
 ├── postgres/
 ├── redis/
+├── rustdesk/
 └── tools/
 ```
 

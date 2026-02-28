@@ -40,9 +40,13 @@ help: ## Show this help message
 	@echo   media-down                     Stop Media Server
 	@echo   omnimind-up                    Start Omnimind (AI Service)
 	@echo   omnimind-down                  Stop Omnimind
-	@echo   adguard-up                     Start AdGuard Home (DNS Blocker)
-	@echo   adguard-down                   Stop AdGuard Home
-	@echo   adguard-logs                   Show AdGuard logs
+	@echo   omnimind-logs                  Show Omnimind logs
+	@echo   linkwarden-up                  Start Linkwarden (Bookmark Manager)
+	@echo   linkwarden-down                Stop Linkwarden
+	@echo   linkwarden-logs                Show Linkwarden logs
+	@echo   rustdesk-up                    Start RustDesk Server (Remote Desktop)
+	@echo   rustdesk-down                  Stop RustDesk Server
+	@echo   rustdesk-logs                  Show RustDesk logs
 	@echo   minio-dev-up                   Start MinIO in development mode
 	@echo   minio-dev-down                 Stop MinIO in development mode
 	@echo   minio-dev-restart              Restart MinIO in development mode
@@ -173,15 +177,15 @@ monitoring-up: ## Start Monitoring tools (Uptime Kuma)
 monitoring-down: ## Stop Monitoring tools
 	cd monitoring && docker compose down
 
-# AdGuard Home
-adguard-up: ## Start AdGuard Home
-	cd adguard && docker compose up -d
+# Media (Jellyfin + FileBrowser)
+media-up: ## Start Media Server
+	cd media && docker compose up -d
 
-adguard-down: ## Stop AdGuard Home
-	cd adguard && docker compose down
+media-down: ## Stop Media Server
+	cd media && docker compose down
 
-adguard-logs: ## Show AdGuard logs
-	cd adguard && docker compose logs -f
+media-logs: ## Show Media logs
+	cd media && docker compose logs -f
 
 # Omnimind
 omnimind-up: ## Start Omnimind
@@ -193,25 +197,25 @@ omnimind-down: ## Stop Omnimind
 omnimind-logs: ## Show Omnimind logs
 	cd omnimind && docker compose logs -f
 
-# Media (Jellyfin + FileBrowser)
-media-up: ## Start Media Server
-	cd media && docker compose up -d
+# Linkwarden
+linkwarden-up: ## Start Linkwarden
+	cd linkwarden && docker compose up -d
 
-media-down: ## Stop Media Server
-	cd media && docker compose down
+linkwarden-down: ## Stop Linkwarden
+	cd linkwarden && docker compose down
 
-media-logs: ## Show Media logs
-	cd media && docker compose logs -f
+linkwarden-logs: ## Show Linkwarden logs
+	cd linkwarden && docker compose logs -f
 
-# Tools (Syncthing)
-tools-up: ## Start Tools (Syncthing)
-	cd tools && docker compose up -d
+# RustDesk
+rustdesk-up: ## Start RustDesk Server
+	cd rustdesk && docker compose up -d
 
-tools-down: ## Stop Tools
-	cd tools && docker compose down
+rustdesk-down: ## Stop RustDesk Server
+	cd rustdesk && docker compose down
 
-tools-logs: ## Show Tools logs
-	cd tools && docker compose logs -f
+rustdesk-logs: ## Show RustDesk logs
+	cd rustdesk && docker compose logs -f
 
 # MinIO - Development
 minio-dev-up: network-create ## Start MinIO in development mode
